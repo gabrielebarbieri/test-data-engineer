@@ -1,7 +1,7 @@
 import pandas as pd
 from os.path import join
 from sklearn.linear_model import Lasso
-from sklearn.ensemble import GradientBoostingRegressor
+from sklearn.neighbors import KNeighborsRegressor
 
 
 def load_weather_data(weather_data_path):
@@ -89,21 +89,27 @@ def train_parking_model(data_folder):
     df = parking_df.reset_index()\
         .merge(weather_df.reset_index())\
         .merge(traffic_df.reset_index())
-    clf = GradientBoostingRegressor()
+    clf = KNeighborsRegressor()
     clf.fit(df[['temperature', 'traffic']], df.parkings)
     return clf
 
 
 if __name__ == '__main__':
+    print 'train the bike model...'
     bike_model = train_bike_model('./data')
-    # Some fake data to test the bike model, you can print it to see how they
-    # look
+    print 'bike model trained'
+    print 'test the bike model on some toy data:'
     test_bike_data = pd.DataFrame({'temperature': range(30)})
-    print bike_model.predict(test_bike_data)
+    bike_predictions = bike_model.predict(test_bike_data)
+    print bike_predictions
 
+    print
+
+    print 'train the parking model...'
     parking_model = train_parking_model('./data')
-    # Some fake data to test the parking model, you can print it to see how
-    # they look
+    print 'parking model trained'
+    print 'test the parking model on some toy data:'
     test_parking_data = pd.DataFrame({'temperature': range(30),
                                       'traffic': 0.3})
-    print parking_model.predict(test_parking_data)
+    parking_predictions = parking_model.predict(test_parking_data)
+    print parking_predictions
